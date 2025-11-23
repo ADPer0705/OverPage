@@ -1,0 +1,12 @@
+# System files
+.DS_Store
+Thumbs.db
+
+# PHP
+backend/config.php
+backend/vendor/
+*.log
+
+# IDE
+.vscode/
+.idea/

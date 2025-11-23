@@ -46,7 +46,7 @@ Later versions will expand the backend with Python for more advanced ML and RAG 
 
 ### **LLM Integration**
 
-* Uses external API model via PHP `curl`
+* Uses **Google Gemini API** via PHP `curl`
 * No local ML setup required
 * Future upgrade path: plug in a Python FastAPI microservice for embeddings and advanced processing
 
@@ -129,7 +129,7 @@ php -S localhost:8000 -t backend
 
 ### 3. Update API key
 
-Inside `backend/api.php`, set your OpenAI or Groq API key.
+Inside `backend/config.php`, set your **Google Gemini API key**.
 
 ### 4. Load the browser extension
 
@@ -172,7 +172,7 @@ Done.
 
 **AI**
 
-* External LLM API (OpenAI, Groq, or LM Studio HTTP server)
+* **Google Gemini** (via API)
 
 ---
 
