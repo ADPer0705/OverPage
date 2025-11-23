@@ -68,18 +68,47 @@ if (AI_PROVIDER === 'google') {
     exit;
 }
 
-// 3. Call the API using cURL
-$ch = curl_init($apiUrl);
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-curl_setopt($ch, CURLOPT_POST, true);
-curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
-curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+// 3. Call the API
+$response = null;
+$httpCode = 0;
+$curlError = null;
 
-$response = curl_exec($ch);
-$httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-$curlError = curl_error($ch);
+if (function_exists('curl_init')) {
+    // Use cURL if available (Recommended)
+    $ch = curl_init($apiUrl);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
 
-curl_close($ch);
+    $response = curl_exec($ch);
+    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    $curlError = curl_error($ch);
+    curl_close($ch);
+} else {
+    // Fallback: use file_get_contents if cURL is missing
+    // Note: This requires 'allow_url_fopen = On' in php.ini
+    $options = [
+        'http' => [
+            'header'  => implode("\r\n", $headers),
+            'method'  => 'POST',
+            'content' => json_encode($data),
+            'ignore_errors' => true
+        ]
+    ];
+    $context  = stream_context_create($options);
+    $response = @file_get_contents($apiUrl, false, $context);
+    
+    if ($response === false) {
+        $curlError = "file_get_contents failed. Enable php-curl or allow_url_fopen.";
+    } else {
+        // Extract HTTP code from headers
+        if (isset($http_response_header)) {
+            preg_match('#HTTP/\d\.\d (\d+)#', $http_response_header[0], $matches);
+            $httpCode = intval($matches[1] ?? 0);
+        }
+    }
+}
 
 // 4. Handle Response
 if ($curlError) {
