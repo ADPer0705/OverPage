@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OverPage</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>OverPage</h1>
+      <div id="status" class="status-indicator">Ready</div>
+    </header>
+    
+    <div id="initial-view">
+      <p class="current-page-info">Current Page: <span id="page-title">Loading...</span></p>
+      <button id="chat-btn" class="primary-btn">Chat with site</button>
+    </div>
+
+    <div id="chat-view" class="hidden">
+      <div id="chat-history" class="chat-history">
+        <!-- Messages go here -->
+        <div class="message system">
+          <p>Page processed. Ask me anything!</p>
+        </div>
+      </div>
+      <div class="input-area">
+        <input type="text" id="user-input" placeholder="Ask a question..." />
+        <button id="send-btn">Send</button>
+      </div>
+    </div>
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>
