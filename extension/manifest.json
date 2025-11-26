@@ -2,15 +2,26 @@
   "manifest_version": 3,
   "name": "OverPage",
   "version": "0.2.0",
-  "description": "Analyze and chat with any webpage using AI.",
+  "description": "Provides AI-powered explanations and answers based on the page you're viewing and its related content, enabling interactive understanding of any website.",
+  
   "permissions": [
-    "activeTab",
+    "tabs",
     "scripting",
     "storage"
   ],
-  "action": {
-    "default_popup": "popup.html"
+
+  "host_permissions": [
+    "<all_urls>"
+  ],
+
+  "side_panel": {
+    "default_path": "sidepanel.html"
   },
+
+  "action": {
+    "default_title": "Open OverPage"
+  },
+
   "background": {
     "service_worker": "background.js"
   }

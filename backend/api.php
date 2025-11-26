@@ -26,10 +26,12 @@ if (!$input) {
 $action = $input['action'] ?? '';
 $query = $input['query'] ?? '';
 $content = $input['content'] ?? '';
+$history = $input['history'] ?? [];
+$trail = $input['trail'] ?? [];
 
 // Basic validation
-if (empty($query) || empty($content)) {
-    echo json_encode(['reply' => 'Please provide both a question and page content.']);
+if (empty($query) && empty($history)) {
+    echo json_encode(['reply' => 'Please provide a question.']);
     exit;
 }
 
@@ -38,6 +40,26 @@ if (empty($query) || empty($content)) {
 // Llama3-8b on Groq has a limit, let's keep it safe around 15,000 chars for now.
 $maxChars = 15000;
 $cleanContent = substr(strip_tags($content), 0, $maxChars);
+
+// Format Navigation Trail
+$trailText = "";
+if (!empty($trail)) {
+    $trailText = "User's recent navigation history (last 5 pages):\n";
+    foreach ($trail as $page) {
+        $trailText .= "- " . ($page['title'] ?? 'Unknown') . " (" . ($page['url'] ?? '') . ")\n";
+    }
+}
+
+// Format Conversation History
+$historyText = "";
+if (!empty($history)) {
+    // Take last 10 messages to avoid context overflow
+    $recentHistory = array_slice($history, -10); 
+    foreach ($recentHistory as $msg) {
+        $role = ($msg['role'] === 'user') ? "User" : "Assistant";
+        $historyText .= "$role: " . $msg['content'] . "\n";
+    }
+}
 
 // 2. Prepare the API Request
 $apiKey = '';
@@ -52,12 +74,26 @@ if (AI_PROVIDER === 'google') {
     $apiUrl = "https://generativelanguage.googleapis.com/v1beta/models/$model:generateContent?key=$apiKey";
     
     // Google Gemini format
-    $prompt = SYSTEM_PROMPT . "\n\nContext from webpage:\n" . $cleanContent . "\n\nUser Question: " . $query;
+    // Construct a rich prompt
+    $finalPrompt = SYSTEM_PROMPT . "\n\n";
+    
+    if ($trailText) {
+        $finalPrompt .= "CONTEXT - NAVIGATION TRAIL:\n" . $trailText . "\n\n";
+    }
+    
+    $finalPrompt .= "CONTEXT - CURRENT PAGE CONTENT:\n" . $cleanContent . "\n\n";
+    
+    if ($historyText) {
+        $finalPrompt .= "CONVERSATION HISTORY:\n" . $historyText . "\n\n";
+    }
+    
+    $finalPrompt .= "User Question: " . $query;
+
     $data = [
         "contents" => [
             [
                 "parts" => [
-                    ["text" => $prompt]
+                    ["text" => $finalPrompt]
                 ]
             ]
         ]

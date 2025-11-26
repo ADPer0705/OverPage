@@ -1,6 +1,6 @@
-body {
-  width: 350px;
-  height: 500px;
+html, body {
+  height: 100%;
+  width: 100%;
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   background-color: #f9f9f9;
@@ -10,7 +10,7 @@ body {
 .container {
   display: flex;
   flex-direction: column;
-  height: 100%;
+  height: 100vh;
 }
 
 header {
@@ -79,7 +79,7 @@ h1 {
   flex: 1;
   display: flex;
   flex-direction: column;
-  height: calc(100% - 53px); /* Adjust based on header height */
+  overflow: hidden; /* Ensure inner scroll works */
 }
 
 .hidden {
@@ -133,15 +133,22 @@ h1 {
   gap: 10px;
 }
 
-input[type="text"] {
+#user-input {
   flex: 1;
   padding: 10px;
   border: 1px solid #ddd;
   border-radius: 6px;
   outline: none;
+  resize: none;
+  font-family: inherit;
+  font-size: 14px;
+  line-height: 1.4;
+  min-height: 20px;
+  max-height: 120px;
+  overflow-y: auto;
 }
 
-input[type="text"]:focus {
+#user-input:focus {
   border-color: #3498db;
 }
 
